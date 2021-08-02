@@ -2,10 +2,16 @@
 page {
 	margin: 0;
 	padding: 0;
+	/* background-color: #ffffed; */
 }
 .container {
 
 	font-size: 14px;
+}
+.commodity {
+	font-size: 18px;
+	font-weight: 900;
+	text-align: center;
 }
 .imgWapper {
 	width: 100%;

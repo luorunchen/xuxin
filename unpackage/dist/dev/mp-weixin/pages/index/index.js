@@ -106,16 +106,19 @@ try {
       return __webpack_require__.e(/*! import() | uni_modules/uni-row/components/uni-row/uni-row */ "uni_modules/uni-row/components/uni-row/uni-row").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-row/components/uni-row/uni-row.vue */ 19))
     },
     uniCol: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-row/components/uni-col/uni-col */ "uni_modules/uni-row/components/uni-col/uni-col").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-row/components/uni-col/uni-col.vue */ 28))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-row/components/uni-col/uni-col */ "uni_modules/uni-row/components/uni-col/uni-col").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-row/components/uni-col/uni-col.vue */ 26))
     },
     uniIcons: function() {
-      return Promise.all(/*! import() | uni_modules/uni-icons/components/uni-icons/uni-icons */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-icons/components/uni-icons/uni-icons")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-icons/components/uni-icons/uni-icons.vue */ 43))
+      return Promise.all(/*! import() | uni_modules/uni-icons/components/uni-icons/uni-icons */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-icons/components/uni-icons/uni-icons")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-icons/components/uni-icons/uni-icons.vue */ 33))
     },
     uniPopup: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-popup/components/uni-popup/uni-popup */ "uni_modules/uni-popup/components/uni-popup/uni-popup").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-popup/components/uni-popup/uni-popup.vue */ 29))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-popup/components/uni-popup/uni-popup */ "uni_modules/uni-popup/components/uni-popup/uni-popup").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-popup/components/uni-popup/uni-popup.vue */ 41))
     },
     uniBadge: function() {
-      return __webpack_require__.e(/*! import() | uni_modules/uni-badge/components/uni-badge/uni-badge */ "uni_modules/uni-badge/components/uni-badge/uni-badge").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-badge/components/uni-badge/uni-badge.vue */ 52))
+      return __webpack_require__.e(/*! import() | uni_modules/uni-badge/components/uni-badge/uni-badge */ "uni_modules/uni-badge/components/uni-badge/uni-badge").then(__webpack_require__.bind(null, /*! @/uni_modules/uni-badge/components/uni-badge/uni-badge.vue */ 48))
+    },
+    uniPopupMessage: function() {
+      return Promise.all(/*! import() | uni_modules/uni-popup/components/uni-popup-message/uni-popup-message */[__webpack_require__.e("common/vendor"), __webpack_require__.e("uni_modules/uni-popup/components/uni-popup-message/uni-popup-message")]).then(__webpack_require__.bind(null, /*! @/uni_modules/uni-popup/components/uni-popup-message/uni-popup-message.vue */ 55))
     }
   }
 } catch (e) {
@@ -244,6 +247,55 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var _default =
 {
   data: function data() {
@@ -251,27 +303,30 @@ var _default =
       productDetails: [{
         name: '麻辣小龙虾',
         img: '../../static/niunan.jpg',
-        price: [{
-          priceOne: '15元' },
+        num: 1,
+        priceDown: '15元',
+        priceUp: '20元' },
 
-        {
-
-          priceOne: '20元' }] },
 
 
       {
-        name: '麻辣小龙虾',
+        name: '麻辣大龙虾',
         img: '../../static/niunan.jpg',
-        price: [{
-          priceOne: '15元' },
-
-        {
-
-          priceOne: '20元' }] }],
+        num: 1,
+        priceDown: '15元',
+        priceUp: '20元' },
 
 
+      {
+        name: '娃哈哈',
+        img: '../../static/niunan.jpg',
+        num: 1,
+        priceDown: '15元',
+        priceUp: '20元' }],
 
-      num: 2,
+
+
+      num: 0,
       navName: [{
         name: '小炒类',
         id: 1 },
@@ -289,21 +344,60 @@ var _default =
         id: 5 }],
 
       idName: "",
-      price: "",
-      priceIndex: "" };
+      price: [],
+      priceIndex: "1",
+      electedOrderNum: [],
+      electedOrderList: [],
+      strArr: '',
+      strIndex: 0 };
 
   },
   methods: (_methods = {
     //价格高亮按钮
-    priceStatus: function priceStatus(data, index) {
-      this.price = data;
+    priceStatus: function priceStatus(index, price) {
+
       this.priceIndex = index;
-      console.log(data, index);
+      this.price[index] = price;
+
+      this.$forceUpdate();
+      // console.log(index, this.price, 1312)
     },
     //商品数量按钮
-    orderNum: function orderNum(item) {
+    orderNum: function orderNum(item, index, price) {var _this = this;
+      // console.log(this.electedOrderNum,44)
       this.num++;
-      console.log(item);
+      this.strArr = '';
+
+      item.electedPrice = price;
+
+      this.strArr += JSON.stringify(item);
+
+      this.electedOrderNum.push(JSON.parse(this.strArr));
+
+      console.log(this.electedOrderNum, 217);
+      var hash = [];
+      for (var i = 0; i < this.electedOrderNum.length; i++) {
+        for (var j = i + 1; j < this.electedOrderNum.length; j++) {
+          if (this.electedOrderNum[i].name === this.electedOrderNum[j].name && this.electedOrderNum[i].
+          electedPrice === this.electedOrderNum[j].electedPrice) {
+            ++i;
+            j = i;
+          }
+        }
+        this.electedOrderNum[i].num = 0;
+        hash.push(this.electedOrderNum[i]);
+      }
+      // 第二步，统计重复个数
+      hash.forEach(function (item) {
+        _this.electedOrderNum.forEach(function (dd) {
+          if (item.name === dd.name && item.electedPrice === dd.electedPrice) {
+            item.num++;
+          }
+        });
+      });
+      console.log(hash, 9999);
+      this.electedOrderList = hash;
+      this.$refs.popupMessage.open();
     },
     //订单信息按钮
     open: function open() {

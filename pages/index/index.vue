@@ -19,16 +19,24 @@
 						<uni-col :span="14">
 							<view class="title">{{item.name}}</view>
 
-
+							<!-- 
 							<text v-for="el,index2 in item.price" :key='index2'
 								:class="price==index2&&priceIndex==index?'priceYes':'price'"
 								@click="priceStatus(index2,index)">{{el.priceOne}}</text>
-
+ -->
+							<text :class="price[index]==item.priceDown?'priceYes':'price'"
+								@click="priceStatus(index,item.priceDown)">
+								{{item.priceDown}}
+							</text>
+							<text :class="price[index]==item.priceUp?'priceYes':'price'"
+								@click="priceStatus(index,item.priceUp)">
+								{{item.priceUp}}
+							</text>
 
 
 						</uni-col>
 						<uni-col :span="4">
-							<view class="dot" style="text-align: center;" @click="orderNum(item)">
+							<view class="dot" style="text-align: center;" @click="orderNum(item,index,price[index])">
 								<uni-icons type="plusempty" size="23" color="#fff"></uni-icons>
 							</view>
 						</uni-col>
@@ -41,16 +49,54 @@
 			</uni-col>
 		</uni-row>
 		<uni-popup ref="popup" type="bottom" backgroundColor="#fff">
+
 			<view class="waper">
-				dasdas
-				dasdas
-				dasdas
-				dasdas
-				dasdas
-				dasdas
-				dasdas
-				dasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdas
+				<uni-row>
+					<uni-col :span="14">
+						<p class='commodity'>商品</p>
+					</uni-col>
+					<uni-col :span="5">
+						<p class='commodity'>价格</p>
+					</uni-col>
+					<uni-col :span="5">
+						<p class='commodity'>数量</p>
+					</uni-col>
+				</uni-row>
+
+				<scroll-view scroll-y="true" style="height:300px ;">
+					<uni-row :gutter="20" v-for="item,index in electedOrderList" :key='index'>
+
+						<view style="line-height: 30px;">
+							<uni-col :span="14">
+								<view style="text-align: center;">
+									<!-- <image :src='item.img'  class="orderInfo"></image> -->
+									<!-- <p class='commodity'>商品</p> -->
+									{{item.name}}
+								</view>
+							</uni-col>
+							<uni-col :span="5">
+								<view style="text-align: center;">
+									<!-- <p class='commodity'>价格</p> -->
+									{{item.electedPrice}}
+								</view>
+							</uni-col>
+							<uni-col :span="5">
+								<view style="text-align: center;">
+									<!-- <p class='commodity'>数量</p> -->
+									{{item.num}}
+								</view>
+							</uni-col>
+						</view>
+					</uni-row>
+
+
+				</scroll-view>
+
+
+
 			</view>
+
+
 		</uni-popup>
 		<view class="bottom2">
 			<view class="meOrder" @click="open">
@@ -68,6 +114,9 @@
 			</view>
 
 		</view>
+		<uni-popup ref="popupMessage" type="message">
+			<uni-popup-message type="success" message="商品添加成功" :duration="1000"></uni-popup-message>
+		</uni-popup>
 	</view>
 
 </template>
@@ -79,27 +128,30 @@
 				productDetails: [{
 						name: '麻辣小龙虾',
 						img: '../../static/niunan.jpg',
-						price: [{
-							priceOne: '15元',
+						num: 1,
+						priceDown: '15元',
+						priceUp: '20元',
 
-						}, {
 
-							priceOne: '20元'
-						}, ]
 					},
 					{
-						name: '麻辣小龙虾',
+						name: '麻辣大龙虾',
 						img: '../../static/niunan.jpg',
-						price: [{
-							priceOne: '15元',
+						num: 1,
+						priceDown: '15元',
+						priceUp: '20元'
 
-						}, {
+					},
+					{
+						name: '娃哈哈',
+						img: '../../static/niunan.jpg',
+						num: 1,
+						priceDown: '15元',
+						priceUp: '20元'
 
-							priceOne: '20元'
-						}, ]
 					},
 				],
-				num: 2,
+				num: 0,
 				navName: [{
 					name: '小炒类',
 					id: 1
@@ -117,21 +169,60 @@
 					id: 5
 				}],
 				idName: "",
-				price: "",
-				priceIndex: "",
+				price: [],
+				priceIndex: "1",
+				electedOrderNum: [],
+				electedOrderList:[],
+				strArr: '',
+				strIndex: 0
 			};
 		},
 		methods: {
 			//价格高亮按钮
-			priceStatus(data,index) {
-				this.price = data
-				this.priceIndex=index
-				console.log(data,index)
+			priceStatus(index, price) {
+
+				this.priceIndex = index
+				this.price[index] = price
+
+				this.$forceUpdate()
+				// console.log(index, this.price, 1312)
 			},
 			//商品数量按钮
-			orderNum(item) {
+			orderNum(item, index, price) {
+				// console.log(this.electedOrderNum,44)
 				this.num++
-				console.log(item)
+				this.strArr = ''
+			
+				item.electedPrice = price
+	
+				this.strArr += JSON.stringify(item)
+			
+				this.electedOrderNum.push(JSON.parse(this.strArr))
+			
+				console.log(this.electedOrderNum, 217)
+				var hash = [];
+				for (var i = 0; i < this.electedOrderNum.length; i++) {
+					for (var j = i + 1; j < this.electedOrderNum.length; j++) {
+						if (this.electedOrderNum[i].name === this.electedOrderNum[j].name && this.electedOrderNum[i]
+							.electedPrice === this.electedOrderNum[j].electedPrice) {
+							++i;
+							j = i;
+						}
+					}
+					this.electedOrderNum[i].num = 0;
+					hash.push(this.electedOrderNum[i]);
+				}
+				// 第二步，统计重复个数
+				hash.forEach(item => {
+					this.electedOrderNum.forEach(dd => {
+						if (item.name === dd.name && item.electedPrice === dd.electedPrice) {
+							item.num++
+						}
+					})
+				});
+				console.log(hash, 9999)
+				this.electedOrderList=hash
+				this.$refs.popupMessage.open()
 			},
 			//订单信息按钮
 			open() {
@@ -157,6 +248,7 @@
 	body {
 		margin: 0;
 		padding: 0;
+		/* background-color: #ffffed; */
 	}
 
 	.container {
@@ -164,6 +256,12 @@
 		font-size: 14px;
 
 
+	}
+
+	.commodity {
+		font-size: 18px;
+		font-weight: 900;
+		text-align: center;
 	}
 
 	.imgWapper {
@@ -245,6 +343,7 @@
 
 	.waper {
 		height: 300px;
+
 	}
 
 	.bottom2 {

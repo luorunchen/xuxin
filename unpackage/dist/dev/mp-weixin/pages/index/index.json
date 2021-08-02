@@ -5,6 +5,7 @@
     "uni-col": "/uni_modules/uni-row/components/uni-col/uni-col",
     "uni-icons": "/uni_modules/uni-icons/components/uni-icons/uni-icons",
     "uni-popup": "/uni_modules/uni-popup/components/uni-popup/uni-popup",
-    "uni-badge": "/uni_modules/uni-badge/components/uni-badge/uni-badge"
+    "uni-badge": "/uni_modules/uni-badge/components/uni-badge/uni-badge",
+    "uni-popup-message": "/uni_modules/uni-popup/components/uni-popup-message/uni-popup-message"
   }
 }
