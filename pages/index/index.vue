@@ -6,9 +6,17 @@
 				<view :class="idName == item.id ? 'darkHighLight' : 'dark'" v-for="(item, index) in navName" @click="orderClick(item.id)" :key="index">{{ item.name }}</view>
 			</uni-col>
 			<uni-col :span="18">
-				<scroll-view scroll-y="true" :style="{ height: navHeight + 'px' }" class="sv">
+				<scroll-view
+					scroll-y="true"
+					:style="{ height: navHeight + 'px' }"
+					class="sv"
+					:scroll-into-view="clickId"
+					:scroll-with-animation="true"
+					@scroll="scroll"
+					@scrolltolower="scrolltolower"
+				>
 					<view v-for="(el, index) in navName" :key="index">
-						<text style="color: #808080;">{{ el.name }}</text>
+						<text style="color: #808080;"  class="nameTitle"   :id="'po' + index">{{ el.name }}</text>
 
 						<view v-for="(item, index2) in el.list" :key="index2" class="wapper">
 							<uni-row>
@@ -16,7 +24,7 @@
 									<view style="text-align: center;"><image :src="item.img" class="orderInfo"></image></view>
 								</uni-col>
 								<uni-col :span="14">
-									<view class="title">{{ item.name }}</view>
+									<view class="title" >{{ item.name }}</view>
 
 									<text :class="price[index][index2] == item.priceDown ? 'priceYes' : 'price'" @click="priceStatus(index2, item.priceDown, index)">
 										{{ item.priceDown }}元
@@ -127,19 +135,26 @@ export default {
 							priceUp: '20'
 						},
 						{
-							name: '2',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
 						},
 						{
-							name: '3',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
-						}
+						},
+						{
+							name: '1',
+							img: '../../static/niunan.jpg',
+							num: 1,
+							priceDown: '15',
+							priceUp: '20'
+						},
 					]
 				},
 				{
@@ -154,19 +169,33 @@ export default {
 							priceUp: '20'
 						},
 						{
-							name: '5',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
 						},
 						{
-							name: '6',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
-						}
+						},
+						{
+							name: '1',
+							img: '../../static/niunan.jpg',
+							num: 1,
+							priceDown: '15',
+							priceUp: '20'
+						},
+						{
+							name: '1',
+							img: '../../static/niunan.jpg',
+							num: 1,
+							priceDown: '15',
+							priceUp: '20'
+						},
 					]
 				},
 				{
@@ -181,19 +210,26 @@ export default {
 							priceUp: '20'
 						},
 						{
-							name: '8',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
 						},
 						{
-							name: '9',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
-						}
+						},
+						{
+							name: '1',
+							img: '../../static/niunan.jpg',
+							num: 1,
+							priceDown: '15',
+							priceUp: '20'
+						},
 					]
 				},
 				{
@@ -208,19 +244,26 @@ export default {
 							priceUp: '20'
 						},
 						{
-							name: '12',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
 						},
 						{
-							name: '13',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
-						}
+						},
+						{
+							name: '1',
+							img: '../../static/niunan.jpg',
+							num: 1,
+							priceDown: '15',
+							priceUp: '20'
+						},
 					]
 				},
 				{
@@ -235,19 +278,26 @@ export default {
 							priceUp: '20'
 						},
 						{
-							name: '15',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
 						},
 						{
-							name: '16',
+							name: '1',
 							img: '../../static/niunan.jpg',
 							num: 1,
 							priceDown: '15',
 							priceUp: '20'
-						}
+						},
+						{
+							name: '1',
+							img: '../../static/niunan.jpg',
+							num: 1,
+							priceDown: '15',
+							priceUp: '20'
+						},
 					]
 				}
 			],
@@ -261,7 +311,11 @@ export default {
 			sumOfPrices: 0,
 			pH: 0, //窗口高度
 			navHeight: 0, //元素的所需高度
-			price: [[], [], [], [], []]
+			price: [[], [], [], [], []],
+			clickId: '',
+
+			topList: [],
+			isLeftClick: false
 		};
 	},
 	mounted() {
@@ -270,7 +324,7 @@ export default {
 			//调用uni-app接口获取屏幕高度
 			success(res) {
 				//成功回调函数
-				console.log(res);
+				//console.log(res);
 				that._data.pH = res.windowHeight; //windoHeight为窗口高度，主要使用的是这个
 				let titleH = uni.createSelectorQuery().select('.sv'); //想要获取高度的元素名（class/id）
 				titleH
@@ -282,22 +336,62 @@ export default {
 					.exec();
 			}
 		});
+		this.getNodesInfo();
 	},
 	methods: {
+		getNodesInfo() {
+			//小程序没有doucument和window对象(undefined)
+			const query = uni.createSelectorQuery().selectAll('.nameTitle');
+			console.log(query, 33);
+			query.boundingClientRect().exec(res => {
+				let nodes = res[0];
+				let arr = [];
+				console.log(res, 'llllll');
+				nodes.map(item => {
+					arr.push(item.top);
+				});
+				this.topList = arr;
+				console.log(this.topList, 666);
+			});
+		},
+		scroll(e) {
+			if (this.isLeftClick) {
+				this.isLeftClick = false;
+				return;
+			}
+			let scrollTop = e.target.scrollTop+200;
+			console.log(scrollTop, 555);
+			// 只能变前第三个，最后一个到不了底部，只能用滚动到底部事件
+			for (let i = 0; i < this.topList.length; i++) {
+				let h1 = this.topList[i];
+				let h2 = this.topList[i + 1];
+				if (scrollTop > h1 && scrollTop < h2) {
+					// console.log(h1,h2,scrollTop)
+					this.idName = i + 1;
+					// console.log(i,93933)
+				}
+			}
+		},
+		// 滚动到底部
+		scrolltolower() {
+			setTimeout(() => {
+				this.idName = 5;
+			}, 80);
+		},
+
 		//价格高亮按钮
 		priceStatus(index, price, elIndex) {
 			this.priceIndex = index;
 			// this.price[index] = price;
 			this.price[elIndex][index] = price;
 			this.$forceUpdate();
-			console.log(index, price, elIndex);
 		},
 		//商品数量按钮
 		orderNum(item, index, price) {
 			if (price == null || price == undefined) {
 				return this.$refs.popupMessageError.open();
 			}
-			// console.log(this.electedOrderNum,44)
+			// //console.log(this.electedOrderNum,44)
 			this.orderNumber++;
 			this.strArr = '';
 
@@ -307,7 +401,7 @@ export default {
 
 			this.electedOrderNum.push(JSON.parse(this.strArr));
 
-			console.log(this.electedOrderNum, 'wpos');
+			//console.log(this.electedOrderNum, 'wpos');
 			var hash = [];
 			for (var i = 0; i < this.electedOrderNum.length; i++) {
 				for (var j = i + 1; j < this.electedOrderNum.length; j++) {
@@ -320,7 +414,7 @@ export default {
 				hash.push(this.electedOrderNum[i]);
 			}
 
-			console.log(hash, 45646);
+			//console.log(hash, 45646);
 			// 第二步，统计重复个数
 			let arr = [];
 			hash.forEach(item => {
@@ -333,7 +427,7 @@ export default {
 
 				arr.push(item.electedPrice * 1);
 			});
-			console.log(price, 789);
+			//console.log(price, 789);
 
 			// hash.forEach(i => {
 
@@ -381,7 +475,7 @@ export default {
 			//清除删除后面数组里得empty
 			this.electedOrderNum = this.electedOrderNum.filter(d => d);
 			this.electedOrderList = this.electedOrderList.filter(d => d);
-			console.log('*************', this.electedOrderNum, this.electedOrderList);
+			//console.log('*************', this.electedOrderNum, this.electedOrderList);
 			// this.electedOrderList[index].num--;
 		},
 		// 订单信息弹窗
@@ -391,6 +485,9 @@ export default {
 		},
 		orderClick(id) {
 			this.idName = id;
+			this.clickId = 'po' + (id-1);
+
+			this.isLeftClick = true;
 		}
 	}
 };
@@ -544,8 +641,8 @@ body {
 }
 
 .meOrder {
-	// background-color: #ffaa7f; 
-	background-color:rgba(255,170,127,0.1);
+	background-color: #fff;
+	// background-color:rgba(255,170,127,0.);
 	width: 50%;
 }
 </style>

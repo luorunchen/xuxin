@@ -284,6 +284,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 var _default =
 {
   data: function data() {
@@ -302,14 +310,21 @@ var _default =
           priceUp: '20' },
 
         {
-          name: '2',
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
           priceUp: '20' },
 
         {
-          name: '3',
+          name: '1',
+          img: '../../static/niunan.jpg',
+          num: 1,
+          priceDown: '15',
+          priceUp: '20' },
+
+        {
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
@@ -329,14 +344,28 @@ var _default =
           priceUp: '20' },
 
         {
-          name: '5',
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
           priceUp: '20' },
 
         {
-          name: '6',
+          name: '1',
+          img: '../../static/niunan.jpg',
+          num: 1,
+          priceDown: '15',
+          priceUp: '20' },
+
+        {
+          name: '1',
+          img: '../../static/niunan.jpg',
+          num: 1,
+          priceDown: '15',
+          priceUp: '20' },
+
+        {
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
@@ -356,14 +385,21 @@ var _default =
           priceUp: '20' },
 
         {
-          name: '8',
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
           priceUp: '20' },
 
         {
-          name: '9',
+          name: '1',
+          img: '../../static/niunan.jpg',
+          num: 1,
+          priceDown: '15',
+          priceUp: '20' },
+
+        {
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
@@ -383,14 +419,21 @@ var _default =
           priceUp: '20' },
 
         {
-          name: '12',
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
           priceUp: '20' },
 
         {
-          name: '13',
+          name: '1',
+          img: '../../static/niunan.jpg',
+          num: 1,
+          priceDown: '15',
+          priceUp: '20' },
+
+        {
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
@@ -410,14 +453,21 @@ var _default =
           priceUp: '20' },
 
         {
-          name: '15',
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
           priceUp: '20' },
 
         {
-          name: '16',
+          name: '1',
+          img: '../../static/niunan.jpg',
+          num: 1,
+          priceDown: '15',
+          priceUp: '20' },
+
+        {
+          name: '1',
           img: '../../static/niunan.jpg',
           num: 1,
           priceDown: '15',
@@ -436,7 +486,11 @@ var _default =
       sumOfPrices: 0,
       pH: 0, //窗口高度
       navHeight: 0, //元素的所需高度
-      price: [[], [], [], [], []] };
+      price: [[], [], [], [], []],
+      clickId: '',
+
+      topList: [],
+      isLeftClick: false };
 
   },
   mounted: function mounted() {
@@ -445,7 +499,7 @@ var _default =
       //调用uni-app接口获取屏幕高度
       success: function success(res) {
         //成功回调函数
-        console.log(res);
+        //console.log(res);
         that._data.pH = res.windowHeight; //windoHeight为窗口高度，主要使用的是这个
         var titleH = uni.createSelectorQuery().select('.sv'); //想要获取高度的元素名（class/id）
         titleH.
@@ -457,22 +511,62 @@ var _default =
         exec();
       } });
 
+    this.getNodesInfo();
   },
   methods: {
+    getNodesInfo: function getNodesInfo() {var _this = this;
+      //小程序没有doucument和window对象(undefined)
+      var query = uni.createSelectorQuery().selectAll('.nameTitle');
+      console.log(query, 33);
+      query.boundingClientRect().exec(function (res) {
+        var nodes = res[0];
+        var arr = [];
+        console.log(res, 'llllll');
+        nodes.map(function (item) {
+          arr.push(item.top);
+        });
+        _this.topList = arr;
+        console.log(_this.topList, 666);
+      });
+    },
+    scroll: function scroll(e) {
+      if (this.isLeftClick) {
+        this.isLeftClick = false;
+        return;
+      }
+      var scrollTop = e.target.scrollTop + 200;
+      console.log(scrollTop, 555);
+      // 只能变前第三个，最后一个到不了底部，只能用滚动到底部事件
+      for (var i = 0; i < this.topList.length; i++) {
+        var h1 = this.topList[i];
+        var h2 = this.topList[i + 1];
+        if (scrollTop > h1 && scrollTop < h2) {
+          // console.log(h1,h2,scrollTop)
+          this.idName = i + 1;
+          // console.log(i,93933)
+        }
+      }
+    },
+    // 滚动到底部
+    scrolltolower: function scrolltolower() {var _this2 = this;
+      setTimeout(function () {
+        _this2.idName = 5;
+      }, 80);
+    },
+
     //价格高亮按钮
     priceStatus: function priceStatus(index, price, elIndex) {
       this.priceIndex = index;
       // this.price[index] = price;
       this.price[elIndex][index] = price;
       this.$forceUpdate();
-      console.log(index, price, elIndex);
     },
     //商品数量按钮
-    orderNum: function orderNum(item, index, price) {var _this = this;
+    orderNum: function orderNum(item, index, price) {var _this3 = this;
       if (price == null || price == undefined) {
         return this.$refs.popupMessageError.open();
       }
-      // console.log(this.electedOrderNum,44)
+      // //console.log(this.electedOrderNum,44)
       this.orderNumber++;
       this.strArr = '';
 
@@ -482,7 +576,7 @@ var _default =
 
       this.electedOrderNum.push(JSON.parse(this.strArr));
 
-      console.log(this.electedOrderNum, 'wpos');
+      //console.log(this.electedOrderNum, 'wpos');
       var hash = [];
       for (var i = 0; i < this.electedOrderNum.length; i++) {
         for (var j = i + 1; j < this.electedOrderNum.length; j++) {
@@ -495,11 +589,11 @@ var _default =
         hash.push(this.electedOrderNum[i]);
       }
 
-      console.log(hash, 45646);
+      //console.log(hash, 45646);
       // 第二步，统计重复个数
       var arr = [];
       hash.forEach(function (item) {
-        _this.electedOrderNum.forEach(function (dd) {
+        _this3.electedOrderNum.forEach(function (dd) {
           if (item.name === dd.name && item.electedPrice === dd.electedPrice) {
             item.num++;
             item.totalPrice = item.electedPrice * 1 * item.num;
@@ -508,7 +602,7 @@ var _default =
 
         arr.push(item.electedPrice * 1);
       });
-      console.log(price, 789);
+      //console.log(price, 789);
 
       // hash.forEach(i => {
 
@@ -556,7 +650,7 @@ var _default =
       //清除删除后面数组里得empty
       this.electedOrderNum = this.electedOrderNum.filter(function (d) {return d;});
       this.electedOrderList = this.electedOrderList.filter(function (d) {return d;});
-      console.log('*************', this.electedOrderNum, this.electedOrderList);
+      //console.log('*************', this.electedOrderNum, this.electedOrderList);
       // this.electedOrderList[index].num--;
     },
     // 订单信息弹窗
@@ -566,6 +660,9 @@ var _default =
     },
     orderClick: function orderClick(id) {
       this.idName = id;
+      this.clickId = 'po' + (id - 1);
+
+      this.isLeftClick = true;
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
